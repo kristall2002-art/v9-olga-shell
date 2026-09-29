@@ -321,3 +321,6 @@ html.dark .tgl .i-moon{opacity:1;transform:none}
 .ball img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block;pointer-events:none}
 .ball-hint{text-align:center;margin:6px 0 0;font:italic 400 17px var(--serif);color:var(--mute)}
 @media (max-width:600px){.ball-wrap{height:clamp(360px,105vw,460px)}}
+/* узкие экраны: «Расскажите, / каким вы видите свой образ» */
+.m-br{display:none}
+@media (max-width:600px){.m-br{display:inline}.d-br{display:none}}
