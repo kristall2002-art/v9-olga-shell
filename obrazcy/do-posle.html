@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Образец: слайдер «до и после» — Ольга Шевелева</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/obr.css">
+<style>
+.ba-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,520px);gap:64px;align-items:center}
+.ba{position:relative;aspect-ratio:714/760;border-radius:26px;overflow:hidden;background:var(--bg2);box-shadow:0 30px 60px -36px rgba(22,33,58,.55);cursor:ew-resize;touch-action:pan-y;user-select:none;-webkit-user-select:none;--p:50%}
+.ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-user-drag:none}
+.ba-before{filter:saturate(.3) contrast(.9) brightness(1.05);clip-path:inset(0 calc(100% - var(--p)) 0 0)}
+.ba-line{position:absolute;top:0;bottom:0;left:var(--p);width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 12px rgba(0,0,0,.25)}
+.ba-knob{position:absolute;top:50%;left:var(--p);width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 8px 24px -8px rgba(22,33,58,.6);display:grid;place-items:center;color:var(--ink);transition:transform .2s}
+.ba.drag .ba-knob{transform:scale(1.08)}
+.ba:focus-visible{outline:3px solid var(--blue);outline-offset:4px}
+.ba-tag{position:absolute;top:18px;padding:6px 14px;border-radius:20px;background:rgba(22,33,58,.55);color:#fff;font:400 12px var(--sans);letter-spacing:.2em;text-transform:uppercase;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:opacity .3s}
+.ba-tag.l{left:18px}.ba-tag.r{right:18px}
+.ba-sample{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);padding:5px 12px;border-radius:14px;background:rgba(255,255,255,.85);color:var(--ink);font:500 12px var(--sans);white-space:nowrap}
+.ba-cap{font-size:13px;line-height:1.55;color:var(--mute);margin:16px 4px 0}
+.ba-cap a{color:var(--blue);border-bottom:1px solid #b9cbe2}
+.ba-hint{display:inline-flex;align-items:center;gap:10px;margin-top:26px;font-size:15px;color:var(--text)}
+.ba-hint i{width:34px;height:1px;background:var(--sand)}
+@media (max-width:900px){.ba-grid{grid-template-columns:1fr;gap:30px}}
+@media (max-width:520px){.ba{border-radius:20px}.ba-knob{width:46px;height:46px;margin:-23px 0 0 -23px}}
+</style>
+</head>
+<body>
+<div class="obr-note"><b>Образец блока для сайта.</b> Его нет на сайте, страницу видят только по ссылке. Фото — не работа Ольги, а свободный снимок для показа.</div>
+<header class="obr-hdr"><div class="wrap"><div class="logo"><p class="logo-name">Ольга Шевелева</p><p class="logo-sub">стилист · визажист</p></div></div></header>
+
+<section class="sec sec-alt obr-sec" id="works">
+  <div class="wrap ba-grid">
+    <div>
+      <p class="eyebrow"><i></i>До и после</p>
+      <h2 class="h2">Та же девушка — <em>через два часа</em></h2>
+      <p class="obr-lead">Проведите по фото: слева — до сборов, справа — готовый образ.</p>
+      <p class="ba-hint"><i></i>Потяните за круг или проведите пальцем</p>
+    </div>
+    <div>
+      <div class="ba" id="ba" role="slider" tabindex="0" aria-label="Сравнение до и после" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+        <img src="img/obrazec.webp" alt="После: готовый образ" width="714" height="760">
+        <img class="ba-before" src="img/obrazec.webp" alt="До" width="714" height="760">
+        <span class="ba-line"></span>
+        <span class="ba-knob" aria-hidden="true"><svg width="26" height="14" viewBox="0 0 26 14"><path d="M7 1 1 7l6 6M19 1l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="ba-tag l">До</span><span class="ba-tag r">После</span>
+        <span class="ba-sample">Образец</span>
+      </div>
+      <p class="ba-cap">Фото: Boutiqaat, <a href="https://creativecommons.org/licenses/by/3.0/deed.ru">CC BY 3.0</a>, <a href="https://commons.wikimedia.org/wiki/File:Makeup_Tutorial_by_Asma_Brek_on_Mais_Hamdan_(01).jpg">Викисклад</a>. «До» здесь — то же фото, обесцвеченное программой. Для сайта нужны настоящие пары от Ольги: один ракурс и один свет, и согласие клиентки на публикацию.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="obr-foot"><div class="wrap">Блок без внешних библиотек: обычная разметка и небольшой скрипт, на скорость страницы почти не влияет.</div></footer>
+
+<script>
+(function(){
+  var ba = document.getElementById('ba'), p = 50, touched = false;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function set(v){ p = Math.max(0, Math.min(100, v)); ba.style.setProperty('--p', p + '%'); ba.setAttribute('aria-valuenow', Math.round(p));
+    ba.querySelector('.l').style.opacity = p < 12 ? 0 : 1; ba.querySelector('.r').style.opacity = p > 88 ? 0 : 1; }
+  function at(e){ var r = ba.getBoundingClientRect(); return (e.clientX - r.left) / r.width * 100; }
+  var dragging = false, sx = 0, sy = 0, decided = false;
+  function cap(e){ try { ba.setPointerCapture(e.pointerId); } catch (_) {} }
+  ba.addEventListener('pointerdown', function(e){ touched = true; dragging = true; decided = e.pointerType !== 'touch'; sx = e.clientX; sy = e.clientY;
+    if (decided) { cap(e); ba.classList.add('drag'); set(at(e)); } });
+  ba.addEventListener('pointermove', function(e){ if (!dragging) return;
+    if (!decided) { var dx = Math.abs(e.clientX - sx), dy = Math.abs(e.clientY - sy); if (dx < 6 && dy < 6) return;
+      if (dy > dx) { dragging = false; return; } decided = true; cap(e); ba.classList.add('drag'); }
+    set(at(e)); });
+  function up(e){ if (dragging && !decided && e.type === 'pointerup') set(at(e)); dragging = false; ba.classList.remove('drag'); }
+  ba.addEventListener('pointerup', up); ba.addEventListener('pointercancel', up);
+  ba.addEventListener('keydown', function(e){ if (e.key === 'ArrowLeft') { set(p - 5); e.preventDefault(); } if (e.key === 'ArrowRight') { set(p + 5); e.preventDefault(); } touched = true; });
+
+  // Подсказка: один раз, когда блок показался, круг сам проходит туда и обратно
+  function hint(){ if (reduce || touched) return;
+    var keys = [[0,50],[700,22],[1500,78],[2200,50]], t0 = performance.now();
+    (function f(t){ if (touched) return; var dt = t - t0, i = 1; while (i < keys.length - 1 && dt > keys[i][0]) i++;
+      var a = keys[i-1], b = keys[i], k = Math.min(1, Math.max(0, (dt - a[0]) / (b[0] - a[0]))), e = k < .5 ? 2*k*k : 1 - Math.pow(-2*k + 2, 2) / 2;
+      set(a[1] + (b[1] - a[1]) * e); if (dt < keys[keys.length-1][0]) requestAnimationFrame(f); })(t0); }
+  if ('IntersectionObserver' in window) { var io = new IntersectionObserver(function(es){ if (es[0].isIntersecting) { io.disconnect(); setTimeout(hint, 400); } }, {threshold: .6}); io.observe(ba); }
+  set(50);
+})();
+</script>
+</body>
+</html>

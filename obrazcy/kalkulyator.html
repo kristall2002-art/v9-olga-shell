@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Образец: калькулятор образа — Ольга Шевелева</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/obr.css">
+<style>
+.kc{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:48px;align-items:start;margin-top:44px}
+.kc-tabs{display:flex;gap:6px;padding:5px;background:var(--chip);border-radius:40px;width:max-content;max-width:100%;overflow-x:auto}
+.kc-tab{border:0;background:transparent;font:400 15px var(--sans);color:var(--text);padding:10px 20px;border-radius:30px;cursor:pointer;white-space:nowrap;transition:background .25s,color .25s}
+.kc-tab[aria-selected="true"]{background:var(--card);color:var(--ink);font-weight:500;box-shadow:0 4px 14px -8px rgba(22,33,58,.35)}
+.kc-pane{margin-top:26px;display:grid;gap:12px}
+.kc-pane[hidden]{display:none}
+.kc-opt{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:14px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px;cursor:pointer;transition:border-color .25s,box-shadow .25s}
+.kc-opt:hover{border-color:#bcd0e8}
+.kc-opt.on{border-color:var(--blue);box-shadow:0 10px 26px -18px rgba(50,95,147,.8)}
+.kc-opt input{position:absolute;opacity:0;pointer-events:none}
+.kc-box{width:22px;height:22px;margin-top:2px;border:1.5px solid #9fbadb;border-radius:7px;display:grid;place-items:center;transition:background .2s,border-color .2s}
+.kc-opt[data-kind="radio"] .kc-box{border-radius:50%}
+.kc-opt.on .kc-box{background:var(--blue);border-color:var(--blue)}
+.kc-box svg{opacity:0;transform:scale(.6);transition:opacity .2s,transform .25s}
+.kc-opt.on .kc-box svg{opacity:1;transform:none}
+.kc-name{font-weight:500;color:var(--ink);font-size:16px;line-height:1.35}
+.kc-desc{font-size:14px;line-height:1.5;color:var(--text);margin-top:4px}
+.kc-price{font:400 22px/1.2 var(--serif);color:var(--ink);white-space:nowrap;text-align:right}
+.kc-price small{display:block;font:300 12px var(--sans);color:var(--mute)}
+.kc-count{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
+.kc-step{display:flex;align-items:center;gap:4px;background:var(--chip);border-radius:30px;padding:4px}
+.kc-step button{width:36px;height:36px;border:0;border-radius:50%;background:var(--card);color:var(--ink);font:400 20px/1 var(--sans);cursor:pointer}
+.kc-step button:disabled{opacity:.35;cursor:default}
+.kc-step output{min-width:30px;text-align:center;font-weight:500;color:var(--ink)}
+.kc-sub{font:400 13px var(--serif);letter-spacing:.24em;text-transform:uppercase;color:var(--sand);margin:16px 0 0}
+.kc-sum{position:sticky;top:24px;background:var(--card);border:1px solid var(--line);border-radius:26px;padding:30px 30px 28px;box-shadow:0 24px 50px -34px rgba(22,33,58,.45)}
+.kc-sum h3{font:400 28px/1.2 var(--serif);color:var(--ink);margin:0 0 16px}
+.kc-lines{list-style:none;margin:0;padding:0;font-size:15px}
+.kc-lines li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line);animation:kc-in .35s ease both}
+.kc-lines li span:last-child{white-space:nowrap;color:var(--ink)}
+.kc-empty{color:var(--mute);font-size:15px;padding:8px 0}
+.kc-total{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:18px 0 6px}
+.kc-total span:first-child{font-weight:500;color:var(--ink)}
+.kc-total b{font:400 34px/1.1 var(--serif);color:var(--blue2);white-space:nowrap}
+.kc-pre{font-size:14px;line-height:1.55;background:var(--bg2);border-radius:14px;padding:12px 14px;margin:14px 0 20px}
+.kc-pre b{font-weight:500;color:var(--ink)}
+.kc-sum .btn{width:100%}
+.kc-hint{font-size:13px;color:var(--mute);margin:14px 0 0;line-height:1.5}
+.kc-msg{font-size:14px;color:var(--blue2);background:var(--chip);border-radius:12px;padding:10px 12px;margin:12px 0 0;display:none}
+.kc-msg.on{display:block;animation:kc-in .3s ease both}
+.kc-bar{position:fixed;left:12px;right:12px;bottom:12px;z-index:30;display:none;align-items:center;justify-content:space-between;gap:12px;background:var(--ink);color:#fff;border-radius:40px;padding:10px 10px 10px 22px;box-shadow:0 16px 40px -16px rgba(22,33,58,.7);transition:transform .35s ease,opacity .35s}
+.kc-bar b{font:400 24px var(--serif)}
+.kc-bar a{background:var(--sand);color:var(--ink);border-radius:30px;padding:10px 18px;font-weight:500;font-size:14px}
+.kc-bar.off{transform:translateY(140%);opacity:0}
+@keyframes kc-in{from{opacity:0;transform:translateY(4px)}}
+@media (max-width:900px){
+  .kc{grid-template-columns:minmax(0,1fr);gap:30px}
+  .kc-sum{position:static}
+  .kc-bar{display:flex}
+}
+@media (max-width:520px){
+  .kc-opt,.kc-count{padding:16px}
+  .kc-opt{grid-template-columns:24px minmax(0,1fr);}
+  .kc-opt .kc-price{grid-column:2;text-align:left}
+  .kc-price small{display:inline;margin-left:6px}
+  .kc-sum{padding:24px 20px}
+}
+</style>
+</head>
+<body>
+<div class="obr-note"><b>Образец блока для сайта.</b> Его нет на сайте, страницу видят только по ссылке. Цены — с сайта olga-sshell.ru на 03.11.2026.</div>
+<header class="obr-hdr"><div class="wrap"><div class="logo"><p class="logo-name">Ольга Шевелева</p><p class="logo-sub">стилист · визажист</p></div></div></header>
+
+<section class="sec obr-sec">
+  <div class="wrap">
+    <p class="eyebrow"><i></i>Калькулятор</p>
+    <h2 class="h2">Соберите <em>свой образ</em></h2>
+    <p class="obr-lead">Отметьте, что нужно, — итог посчитается сразу. С этим набором можно записаться, а точную сумму я подтвержу в переписке.</p>
+
+    <div class="kc">
+      <div>
+        <div class="kc-tabs" role="tablist">
+          <button class="kc-tab" role="tab" aria-selected="true" data-pane="wed">Свадьба</button>
+          <button class="kc-tab" role="tab" aria-selected="false" data-pane="ev">Съёмка или событие</button>
+          <button class="kc-tab" role="tab" aria-selected="false" data-pane="edu">Обучение</button>
+        </div>
+
+        <div class="kc-pane" id="wed">
+          <label class="kc-opt" data-kind="check"><input type="checkbox" data-k="bride" checked><span class="kc-box"><svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.2 3L11 1" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><span class="kc-name">Свадебный образ невесты</span><span class="kc-desc">Макияж и причёска, 3 часа. Выезд по Москве включён. Сборы начинаем за 3 часа до времени, к которому нужно быть готовой.</span></span>
+            <span class="kc-price">15 000 ₽</span></label>
+          <label class="kc-opt" data-kind="check"><input type="checkbox" data-k="rep"><span class="kc-box"><svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.2 3L11 1" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><span class="kc-name">Репетиция свадебного образа</span><span class="kc-desc">2,5 часа в студии на Тверской: примерим несколько причёсок и макияжей.</span></span>
+            <span class="kc-price">10 000 ₽</span></label>
+          <div class="kc-count">
+            <span><span class="kc-name">Гости и близкие невесты</span><span class="kc-desc">Макияж, укладка или полный образ — 5 000–10 000 ₽ с человека, 1–2 часа.</span></span>
+            <span class="kc-step"><button type="button" data-dec="guests" aria-label="Меньше">−</button><output data-out="guests">0</output><button type="button" data-inc="guests" aria-label="Больше">+</button></span>
+          </div>
+          <label class="kc-opt" data-kind="check"><input type="checkbox" data-k="earlyW"><span class="kc-box"><svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.2 3L11 1" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><span class="kc-name">Ранние сборы</span><span class="kc-desc">Если начинаем до 9:00.</span></span>
+            <span class="kc-price">+2 000 ₽</span></label>
+        </div>
+
+        <div class="kc-pane" id="ev" hidden>
+          <div class="kc-count">
+            <span><span class="kc-name">Полный образ</span><span class="kc-desc">Макияж и причёска под идею съёмки или мероприятия, 2 часа — 10 000 ₽ на человека.</span></span>
+            <span class="kc-step"><button type="button" data-dec="look" aria-label="Меньше">−</button><output data-out="look">1</output><button type="button" data-inc="look" aria-label="Больше">+</button></span>
+          </div>
+          <p class="kc-sub">Где собираемся</p>
+          <label class="kc-opt on" data-kind="radio"><input type="radio" name="place" data-k="studio" checked><span class="kc-box"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="3" fill="#fff"/></svg></span>
+            <span><span class="kc-name">В студии на Тверской</span></span>
+            <span class="kc-price">0 ₽</span></label>
+          <label class="kc-opt" data-kind="radio"><input type="radio" name="place" data-k="trip"><span class="kc-box"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="3" fill="#fff"/></svg></span>
+            <span><span class="kc-name">Выезд на локацию в пределах Москвы</span><span class="kc-desc">Подмосковье и другие города — по договорённости.</span></span>
+            <span class="kc-price">+3 000 ₽</span></label>
+          <label class="kc-opt" data-kind="check"><input type="checkbox" data-k="earlyE"><span class="kc-box"><svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.2 3L11 1" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><span class="kc-name">Ранние сборы</span><span class="kc-desc">Если начинаем до 9:00.</span></span>
+            <span class="kc-price">+2 000 ₽</span></label>
+        </div>
+
+        <div class="kc-pane" id="edu" hidden>
+          <p class="kc-sub">Лично со мной</p>
+          <label class="kc-opt on" data-kind="check"><input type="checkbox" data-k="mk" checked><span class="kc-box"><svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.2 3L11 1" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><span class="kc-name">«Сам себе визажист»</span><span class="kc-desc">Обучение по макияжу, 4 часа. Можно двумя занятиями по 2 часа.</span></span>
+            <span class="kc-price">15 000 ₽</span></label>
+          <label class="kc-opt" data-kind="check"><input type="checkbox" data-k="hr"><span class="kc-box"><svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.2 3L11 1" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><span class="kc-name">Обучение по волосам</span><span class="kc-desc">4 часа. Можно двумя занятиями по 2 часа.</span></span>
+            <span class="kc-price">15 000 ₽</span></label>
+          <p class="kc-sub">Или с подругами</p>
+          <div class="kc-count">
+            <span><span class="kc-name">Обучение в группе до 5 человек</span><span class="kc-desc">10 000 ₽ с человека.</span></span>
+            <span class="kc-step"><button type="button" data-dec="group" aria-label="Меньше">−</button><output data-out="group">0</output><button type="button" data-inc="group" aria-label="Больше">+</button></span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="kc-sum" id="sum">
+        <h3>Ваш набор</h3>
+        <ul class="kc-lines" id="lines"></ul>
+        <div class="kc-total"><span>Итого</span><b id="total">0 ₽</b></div>
+        <div class="kc-pre" id="pre"></div>
+        <a class="btn" href="#" id="go"><span class="fill-layer"></span><span class="lbl">Записаться с этим набором <span class="arr">→</span></span></a>
+        <div class="kc-msg" id="msg">Это образец: в рабочей версии кнопка откроет бота, где этот набор уже выбран.</div>
+        <p class="kc-hint">Бронирование даты — 3 000 ₽, оно входит в стоимость. Условия отмены, переноса и возврата — в публичной оферте.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<div class="kc-bar off" id="bar"><span>Итого <b id="barTotal">0 ₽</b></span><a href="#sum">Посмотреть набор</a></div>
+
+<footer class="obr-foot"><div class="wrap">Блок без внешних библиотек: обычная разметка и небольшой скрипт, на скорость страницы почти не влияет.</div></footer>
+
+<script>
+(function(){
+  var MAX = {guests: 15, look: 5, group: 5};
+  var MIN = {guests: 0, look: 1, group: 0};
+  var cnt = {guests: 0, look: 1, group: 0};
+  var pane = 'wed';
+  var PREPAY = 3000;
+  function rub(n){ return n.toLocaleString('ru-RU').replace(/ /g,' ') + ' ₽'; }
+  function on(k){ var el = document.querySelector('input[data-k="'+k+'"]'); return el && el.checked; }
+  function people(n){ var m = n%10, h = n%100; return n + ' ' + (m===1&&h!==11 ? 'человек' : (m>=2&&m<=4&&(h<12||h>14) ? 'человека' : 'человек')); }
+
+  function lines(){
+    var L = [];
+    if (pane === 'wed') {
+      if (on('bride')) L.push(['Свадебный образ невесты', 15000]);
+      if (on('rep')) L.push(['Репетиция образа', 10000]);
+      if (cnt.guests) L.push(['Гости, ' + people(cnt.guests), [5000*cnt.guests, 10000*cnt.guests]]);
+      if (on('earlyW')) L.push(['Ранние сборы', 2000]);
+    } else if (pane === 'ev') {
+      L.push(['Полный образ' + (cnt.look > 1 ? ', ' + people(cnt.look) : ''), 10000*cnt.look]);
+      if (on('trip')) L.push(['Выезд по Москве', 3000]);
+      if (on('earlyE')) L.push(['Ранние сборы', 2000]);
+    } else {
+      if (on('mk')) L.push(['«Сам себе визажист»', 15000]);
+      if (on('hr')) L.push(['Обучение по волосам', 15000]);
+      if (cnt.group) L.push(['Группа, ' + people(cnt.group), 10000*cnt.group]);
+    }
+    return L;
+  }
+
+  var shown = [0,0];
+  function roll(el, from, to, fmt){
+    var t0 = performance.now(), d = 450;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = fmt(to); return; }
+    (function f(t){ var k = Math.min(1,(t-t0)/d), e = 1-Math.pow(1-k,3);
+      el.textContent = fmt([from[0]+(to[0]-from[0])*e, from[1]+(to[1]-from[1])*e]);
+      if (k<1) requestAnimationFrame(f); })(t0);
+  }
+  function fmtTotal(v){ var a = Math.round(v[0]/100)*100, b = Math.round(v[1]/100)*100; return a===b ? rub(a) : rub(a).replace(' ₽','') + ' – ' + rub(b); }
+  function fmtRange(v){ var a = Math.round(v[0]/100)*100, b = Math.round(v[1]/100)*100; return a===b ? rub(a) : 'от ' + rub(a).replace(' ₽','') + ' до ' + rub(b); }
+
+  function render(){
+    var L = lines(), lo = 0, hi = 0, ul = document.getElementById('lines');
+    ul.innerHTML = '';
+    if (!L.length) ul.innerHTML = '<li class="kc-empty" style="border:0">Пока ничего не выбрано</li>';
+    L.forEach(function(x){
+      var p = x[1], li = document.createElement('li');
+      if (Array.isArray(p)) { lo += p[0]; hi += p[1]; } else { lo += p; hi += p; }
+      li.innerHTML = '<span></span><span></span>';
+      li.firstChild.textContent = x[0];
+      li.lastChild.textContent = Array.isArray(p) ? rub(p[0]).replace(' ₽','') + '–' + rub(p[1]) : rub(p);
+      ul.appendChild(li);
+    });
+    var to = [lo, hi];
+    roll(document.getElementById('total'), shown, to, fmtTotal);
+    roll(document.getElementById('barTotal'), shown, to, fmtTotal);
+    shown = to;
+    var pre = document.getElementById('pre');
+    if (!lo) { pre.innerHTML = 'Отметьте услуги — здесь появится, сколько платить сейчас и сколько в день услуги.'; }
+    else {
+      var rest = [lo-PREPAY, hi-PREPAY];
+      pre.innerHTML = '<b>Сейчас — 3 000 ₽</b>, бронирование даты: оно закрепит дату за вами.<br><b>В день услуги — ' + fmtRange(rest) + '</b>.' + (hi>lo ? '<br>Точную цену для гостей назову, когда узнаю, что нужно каждой.' : '');
+    }
+    document.querySelectorAll('.kc-step').forEach(function(s){
+      var k = s.querySelector('output').dataset.out;
+      s.querySelector('output').textContent = cnt[k];
+      s.querySelector('[data-dec]').disabled = cnt[k] <= MIN[k];
+      s.querySelector('[data-inc]').disabled = cnt[k] >= MAX[k];
+    });
+    document.querySelectorAll('.kc-opt').forEach(function(o){ o.classList.toggle('on', o.querySelector('input').checked); });
+  }
+
+  document.querySelectorAll('.kc-tab').forEach(function(b){
+    b.addEventListener('click', function(){
+      pane = b.dataset.pane;
+      document.querySelectorAll('.kc-tab').forEach(function(x){ x.setAttribute('aria-selected', x===b); });
+      document.querySelectorAll('.kc-pane').forEach(function(p){ p.hidden = p.id !== pane; });
+      document.getElementById('msg').classList.remove('on');
+      render();
+    });
+  });
+  document.querySelectorAll('.kc-opt input').forEach(function(i){ i.addEventListener('change', render); });
+  document.querySelectorAll('[data-inc],[data-dec]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.inc || b.dataset.dec;
+      cnt[k] = Math.max(MIN[k], Math.min(MAX[k], cnt[k] + (b.dataset.inc ? 1 : -1)));
+      render();
+    });
+  });
+  document.getElementById('go').addEventListener('click', function(e){ e.preventDefault(); document.getElementById('msg').classList.add('on'); });
+
+  var bar = document.getElementById('bar');
+  if ('IntersectionObserver' in window) {
+    var vis = {lead: true, sum: false};
+    var upd = function(){ bar.classList.toggle('off', vis.lead || vis.sum); };
+    new IntersectionObserver(function(es){ es.forEach(function(e){ vis.sum = e.isIntersecting; }); upd(); }, {threshold: .15}).observe(document.getElementById('sum'));
+    new IntersectionObserver(function(es){ es.forEach(function(e){ vis.lead = e.isIntersecting; }); upd(); }).observe(document.querySelector('.obr-lead'));
+  }
+  render();
+})();
+</script>
+</body>
+</html>

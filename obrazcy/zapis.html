@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Образец: как записаться за минуту — Ольга Шевелева</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/obr.css">
+<link rel="stylesheet" href="z/index.css">
+<script type="module" src="z/zapis.js"></script>
+<style>
+.zp-grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:64px;align-items:center}
+.zp-steps{list-style:none;padding:0;margin:30px 0 34px;counter-reset:s}
+.zp-steps li{counter-increment:s;display:flex;gap:16px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
+.zp-steps li::before{content:counter(s);font:400 28px/1 var(--serif);color:var(--sand);min-width:22px}
+.zp-btns{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+#zapis-demo{width:100%;max-width:400px;justify-self:center}
+@media (max-width:900px){
+  .zp-grid{grid-template-columns:1fr;gap:34px}
+  #zapis-demo{order:-1}
+}
+</style>
+</head>
+<body>
+<div class="obr-note"><b>Образец блока для сайта.</b> Его нет на сайте, страницу видят только по ссылке. Тексты и кнопки в телефоне — из бота Ольги, слово в слово.</div>
+<header class="obr-hdr"><div class="wrap"><div class="logo"><p class="logo-name">Ольга Шевелева</p><p class="logo-sub">стилист · визажист</p></div></div></header>
+
+<section class="sec obr-sec" id="contact">
+  <div class="wrap zp-grid">
+    <div>
+      <p class="eyebrow"><i></i>Запись</p>
+      <h2 class="h2">Записаться — <em>это минута</em></h2>
+      <ol class="zp-steps">
+        <li>Выберите в боте услугу, день и время — календарь показывает только свободное.</li>
+        <li>Я подтвержу запись, сообщение придёт туда же.</li>
+        <li>Бронирование даты, 3 000 ₽, закрепит её за вами и войдёт в стоимость.</li>
+      </ol>
+      <div class="zp-btns">
+        <a class="btn" href="https://t.me/olgasshell_bot"><span class="fill-layer"></span><span class="lbl">Записаться в Telegram <span class="arr">→</span></span></a>
+        <a class="btn-out" href="https://max.ru/se14525840_bot">Записаться в MAX</a>
+      </div>
+    </div>
+    <div id="zapis-demo" aria-label="Как выглядит запись в Telegram-боте Ольги"></div>
+  </div>
+</section>
+
+<footer class="obr-foot"><div class="wrap">Блок собран на наборе Stageshow (MIT). Анимация повторяется, пока блок на экране; при включённом в телефоне «Уменьшении движения» показывается последний кадр.</div></footer>
+</body>
+</html>
